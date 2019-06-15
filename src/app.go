@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+	u := services.UnitResource{map[int]services.Unit{}}
+	restful.DefaultContainer.Add(u.UnitService())
+
 	restful.DefaultContainer.Add(services.HealthCheckService())
 
 	spec := restfulspec.Config{
@@ -20,13 +23,8 @@ func main() {
 
 	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(spec))
 
-	http.Handle(
-		"/docs/",
-		http.StripPrefix(
-			"/docs/",
-			http.FileServer(
-				//TODO: Replace hard-coded path to swagger dist
-				http.Dir("/Users/ricardo/Workspace/swagger-ui/dist"))))
+	//TODO: Replace hard-coded path to swagger dist
+	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("/Users/ricardo/Workspace/swagger-ui/dist"))))
 
 	log.Printf("start listening on localhost:8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))
