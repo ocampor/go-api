@@ -8,6 +8,14 @@ type Unit struct {
 	UnitNumber string  `json:"unit_number" description:"unit number of the property"`
 }
 
+type DetailValidation struct {
+	OverallSimilarity    float32 `json:"overall_similarity" description:"similarity between government property details and parameters"`
+	LocationMatches      bool    `json:"location_matches" description:"the listing is under the same location tree as the government property"`
+	BedroomMatches       bool    `json:"bedroom_matches" description:"the listing bedrooms and the government property matches"`
+	UnitSizeSimilarity   float32 `json:"unit_size_similarity" description:"similarity between government property unit size and listing"`
+	UnitNumberSimilarity float32 `json:"unit_number_similarity" description:"similarity the listing unit number and the government property"`
+}
+
 func (Unit) TableName() string {
 	return "unit"
 }

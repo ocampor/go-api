@@ -6,7 +6,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"net/http"
-	"strconv"
 )
 
 type UnitResource struct {
@@ -18,22 +17,30 @@ func (u UnitResource) UnitService() *restful.WebService {
 	ws.Path("/units").Produces(restful.MIME_JSON)
 
 	ws.Route(
-		ws.GET("/{unit-id}").To(u.findUnit).
+		ws.GET("/{property_id}").To(u.findUnit).
 			Doc("get unit details").
 			Param(
-				ws.PathParameter(
-					"unit-id",
-					"identifier of the property").
-					DataType("integer")).
+				ws.PathParameter("property_id", "identifier of the property").DataType("integer")).
 			Writes(models.Unit{}).
-			Returns(200, "OK", models.Unit{}).
-			Returns(404, "Not Found", nil))
+			Returns(http.StatusOK, http.StatusText(http.StatusOK), models.Unit{}).
+			Returns(http.StatusNotFound, http.StatusText(http.StatusNotFound), nil))
 
+	ws.Route(
+		ws.GET("/validate/{property_id}").To(u.validateDetails).
+			Doc("compare details of a property with the official government records").
+			Param(ws.PathParameter("property_id", "identifier of the property").DataType("integer")).
+			Param(ws.QueryParameter("location_id", "property finder unit location identifier").DataType("integer")).
+			Param(ws.QueryParameter("bedroom_id", "property finder bedrooms identifier").DataType("integer")).
+			Param(ws.QueryParameter("unit_size", "plot area of the property").DataType("float32")).
+			Param(ws.QueryParameter("unit_number", "unit number of the property").DataType("string")).
+			Writes(models.DetailValidation{}).
+			Returns(http.StatusOK, http.StatusText(http.StatusOK), models.DetailValidation{}).
+			Returns(http.StatusNotFound, http.StatusText(http.StatusNotFound), nil))
 	return ws
 }
 
 func (u UnitResource) findUnit(request *restful.Request, response *restful.Response) {
-	id, _ := strconv.Atoi(request.PathParameter("unit-id"))
+	id := request.PathParameter("property_id")
 
 	var unit = models.Unit{}
 	u.Db.First(&unit, id)
@@ -43,4 +50,10 @@ func (u UnitResource) findUnit(request *restful.Request, response *restful.Respo
 	} else {
 		response.WriteEntity(unit)
 	}
+}
+
+func (u UnitResource) validateDetails(request *restful.Request, response *restful.Response) {
+	var detailValidation = models.DetailValidation{0.9, true, true, 0.84, 0.75}
+
+	response.WriteEntity(detailValidation)
 }
