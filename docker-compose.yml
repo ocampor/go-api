@@ -1,0 +1,20 @@
+version: '3.6'
+
+services:
+  migrate:
+    image: boxfuse/flyway:5.0
+    volumes:
+      - ./database/sql:/flyway/sql
+      - ./database/test:/flyway/sql/test
+    command: migrate
+    environment:
+      - FLYWAY_URL=${FLYWAY_URL}
+      - FLYWAY_USER=${FLYWAY_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - FLYWAY_SCHEMAS=${FLYWAY_SCHEMAS}
+  dld-database:
+    image: postgres:latest
+    env_file:
+      - .env
+    ports:
+      - 5434:5432
