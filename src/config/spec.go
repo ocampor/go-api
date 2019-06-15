@@ -5,7 +5,7 @@ import "github.com/go-openapi/spec"
 func SpecSwagger(swo *spec.Swagger) {
 	swo.Info = &spec.Info{
 		InfoProps: spec.InfoProps{
-			Title:       "DubaiLandDepartmentService",
+			Title:       "Dubai Land Department Service",
 			Description: "Resource to retrieve information from land department databases",
 			Contact: &spec.ContactInfo{
 				Name:  "Ricardo Ocampo",

@@ -5,12 +5,28 @@ import (
 	"./services"
 	"github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
+	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
+	"os"
 )
 
+func createClient(uri string) *gorm.DB {
+	db, err := gorm.Open("postgres", uri)
+	log.Printf("Connecting to: %s", uri)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return db
+}
+
 func main() {
-	u := services.UnitResource{map[int]services.Unit{}}
+	uri := os.Getenv("POSTGRES_URI")
+	db := createClient(uri)
+
+	u := services.UnitResource{db}
 	restful.DefaultContainer.Add(u.UnitService())
 
 	restful.DefaultContainer.Add(services.HealthCheckService())
