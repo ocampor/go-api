@@ -4,6 +4,7 @@ import (
 	"../models"
 	"../utils"
 	"github.com/emicklei/go-restful"
+	"github.com/google/jsonapi"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"net/http"
@@ -42,6 +43,8 @@ func (u UnitResource) UnitService() *restful.WebService {
 }
 
 func (u UnitResource) findUnit(request *restful.Request, response *restful.Response) {
+	jsonapiRuntime := jsonapi.NewRuntime().Instrument("units.show")
+
 	id := request.PathParameter("property_id")
 
 	var unit = models.Unit{}
@@ -49,8 +52,11 @@ func (u UnitResource) findUnit(request *restful.Request, response *restful.Respo
 
 	if unit.PropertyId == 0 {
 		response.WriteErrorString(http.StatusNotFound, "Unit could not be found")
-	} else {
-		response.WriteEntity(unit)
+		return
+	}
+
+	if err := jsonapiRuntime.MarshalPayload(response.ResponseWriter, &unit); err != nil {
+		http.Error(response.ResponseWriter, err.Error(), http.StatusInternalServerError)
 	}
 }
 
