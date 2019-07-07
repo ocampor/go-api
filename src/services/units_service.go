@@ -30,7 +30,7 @@ func (u UnitResource) UnitService() *restful.WebService {
 			Param(
 				ws.PathParameter("property_id", "identifier of the property").DataType("integer")).
 			Writes(models.Unit{}).
-			Produces("application/vnd.api+json").
+			Produces(jsonapi.MediaType).
 			Returns(http.StatusOK, http.StatusText(http.StatusOK), models.Unit{}).
 			Returns(http.StatusNotFound, http.StatusText(http.StatusNotFound), nil))
 
@@ -43,6 +43,7 @@ func (u UnitResource) UnitService() *restful.WebService {
 			Param(ws.QueryParameter("unit_size", "plot area of the property").DataType("float64")).
 			Param(ws.QueryParameter("unit_number", "unit number of the property").DataType("string")).
 			Writes(models.DetailValidation{}).
+			Produces(jsonapi.MediaType).
 			Returns(http.StatusOK, http.StatusText(http.StatusOK), models.DetailValidation{}).
 			Returns(http.StatusNotFound, http.StatusText(http.StatusNotFound), nil))
 	return ws
@@ -51,7 +52,7 @@ func (u UnitResource) UnitService() *restful.WebService {
 func (u UnitResource) findUnit(request *restful.Request, response *restful.Response) {
 	id := request.PathParameter("property_id")
 
-	var unit = new(models.Unit)
+	var unit = models.Unit{}
 	u.Db.First(&unit, id)
 
 	if unit.PropertyId == 0 {
@@ -62,13 +63,19 @@ func (u UnitResource) findUnit(request *restful.Request, response *restful.Respo
 	response.ResponseWriter.Header().Set(headerContentType, jsonapi.MediaType)
 	response.ResponseWriter.WriteHeader(http.StatusOK)
 
-	if err := jsonapi.MarshalPayload(response.ResponseWriter, unit); err != nil {
+	if err := jsonapi.MarshalPayload(response.ResponseWriter, &unit); err != nil {
 		http.Error(response.ResponseWriter, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func (u UnitResource) validateDetails(request *restful.Request, response *restful.Response) {
-	id := request.PathParameter("property_id")
+	id, err := strconv.Atoi(request.PathParameter("property_id"))
+
+	if err != nil {
+		response.WriteErrorString(http.StatusBadRequest, "property_id must be an integer")
+		return
+	}
+
 	locationId, _ := strconv.Atoi(request.QueryParameter("location_id"))
 	bedroomId, _ := strconv.Atoi(request.QueryParameter("bedroom_id"))
 	unitSize, _ := strconv.ParseFloat(request.QueryParameter("unit_size"), 64)
@@ -79,26 +86,33 @@ func (u UnitResource) validateDetails(request *restful.Request, response *restfu
 
 	if unit.PropertyId == 0 {
 		response.WriteErrorString(http.StatusNotFound, "Unit could not be found")
+		return
 	}
 
-	locationMatches := locationId == unit.LocationId
-	bedroomMatches := bedroomId == unit.BedroomId
-
+	//TODO: Extract this from the handler and move it to detail Validation
+	locationSimilarity := utils.BoolToFloat64(locationId == unit.LocationId)
+	bedroomSimilarity := utils.BoolToFloat64(bedroomId == unit.BedroomId)
 	unitSizeSimilarity := utils.FloatSimilarity(unit.UnitSize, unitSize)
 	unitNumberSimilarity := utils.StringSimilarity(unit.UnitNumber, unitNumber)
+	overallSimilarity := utils.OverallSimilarity(
+		locationSimilarity,
+		bedroomSimilarity,
+		unitSizeSimilarity,
+		unitNumberSimilarity)
 
-	overallSimilarity := (utils.BoolToFloat64(locationMatches) +
-		utils.BoolToFloat64(bedroomMatches) +
-		unitSizeSimilarity +
-		unitNumberSimilarity) / 4
-
-	var detailValidation = models.DetailValidation{
+	detailValidation := models.DetailValidation{
+		id,
 		overallSimilarity,
-		locationMatches,
-		bedroomMatches,
+		locationSimilarity,
+		bedroomSimilarity,
 		unitSizeSimilarity,
 		unitNumberSimilarity,
 	}
 
-	response.WriteEntity(detailValidation)
+	response.ResponseWriter.Header().Set(headerContentType, jsonapi.MediaType)
+	response.ResponseWriter.WriteHeader(http.StatusOK)
+
+	if err := jsonapi.MarshalPayload(response.ResponseWriter, &detailValidation); err != nil {
+		http.Error(response.ResponseWriter, err.Error(), http.StatusInternalServerError)
+	}
 }

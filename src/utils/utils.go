@@ -24,3 +24,14 @@ func BoolToFloat64(a bool) float64 {
 func StringSimilarity(a string, b string) float64 {
 	return levenshtein.RatioForStrings([]rune(a), []rune(b), levenshtein.DefaultOptions)
 }
+
+func OverallSimilarity(
+	locationSimilarity float64,
+	bedroomSimilarity float64,
+	unitSizeSimilarity float64,
+	unitNumberSimilarity float64) float64 {
+	return (locationSimilarity +
+		bedroomSimilarity +
+		unitSizeSimilarity +
+		unitNumberSimilarity) / 4
+}
