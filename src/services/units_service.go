@@ -11,6 +11,11 @@ import (
 	"strconv"
 )
 
+const (
+	headerAccept      = "Accept"
+	headerContentType = "Content-Type"
+)
+
 type UnitResource struct {
 	Db *gorm.DB
 }
@@ -25,6 +30,7 @@ func (u UnitResource) UnitService() *restful.WebService {
 			Param(
 				ws.PathParameter("property_id", "identifier of the property").DataType("integer")).
 			Writes(models.Unit{}).
+			Produces("application/vnd.api+json").
 			Returns(http.StatusOK, http.StatusText(http.StatusOK), models.Unit{}).
 			Returns(http.StatusNotFound, http.StatusText(http.StatusNotFound), nil))
 
@@ -43,11 +49,9 @@ func (u UnitResource) UnitService() *restful.WebService {
 }
 
 func (u UnitResource) findUnit(request *restful.Request, response *restful.Response) {
-	jsonapiRuntime := jsonapi.NewRuntime().Instrument("units.show")
-
 	id := request.PathParameter("property_id")
 
-	var unit = models.Unit{}
+	var unit = new(models.Unit)
 	u.Db.First(&unit, id)
 
 	if unit.PropertyId == 0 {
@@ -55,7 +59,10 @@ func (u UnitResource) findUnit(request *restful.Request, response *restful.Respo
 		return
 	}
 
-	if err := jsonapiRuntime.MarshalPayload(response.ResponseWriter, &unit); err != nil {
+	response.ResponseWriter.Header().Set(headerContentType, jsonapi.MediaType)
+	response.ResponseWriter.WriteHeader(http.StatusOK)
+
+	if err := jsonapi.MarshalPayload(response.ResponseWriter, unit); err != nil {
 		http.Error(response.ResponseWriter, err.Error(), http.StatusInternalServerError)
 	}
 }
