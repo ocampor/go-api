@@ -40,7 +40,7 @@ func (u UnitResource) UnitService() *restful.WebService {
 			Param(ws.PathParameter("property_id", "identifier of the property").DataType("integer")).
 			Param(ws.QueryParameter("location_id", "property finder unit location identifier").DataType("integer")).
 			Param(ws.QueryParameter("bedroom_id", "property finder bedrooms identifier").DataType("integer")).
-			Param(ws.QueryParameter("unit_size", "plot area of the property").DataType("float64")).
+			Param(ws.QueryParameter("unit_size", "plot area of the property in square feet").DataType("float64")).
 			Param(ws.QueryParameter("unit_number", "unit number of the property").DataType("string")).
 			Writes(models.DetailValidation{}).
 			Produces(jsonapi.MediaType).
@@ -92,7 +92,7 @@ func (u UnitResource) validateDetails(request *restful.Request, response *restfu
 	//TODO: Extract this from the handler and move it to detail Validation
 	locationSimilarity := utils.BoolToFloat64(locationId == unit.LocationId)
 	bedroomSimilarity := utils.BoolToFloat64(bedroomId == unit.BedroomId)
-	unitSizeSimilarity := utils.FloatSimilarity(unit.UnitSize, unitSize)
+	unitSizeSimilarity := utils.FloatSimilarity(unit.UnitSize, unitSize*10.7639)
 	unitNumberSimilarity := utils.StringSimilarity(unit.UnitNumber, unitNumber)
 	overallSimilarity := utils.OverallSimilarity(
 		locationSimilarity,

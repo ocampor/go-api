@@ -4,7 +4,7 @@ type Unit struct {
 	PropertyId int     `jsonapi:"primary,unit" description:"government database property identifier" gorm:"primary_key"`
 	LocationId int     `jsonapi:"attr,location_id" description:"property finder unit location identifier"`
 	BedroomId  int     `jsonapi:"attr,bedroom_id" description:"property finder bedrooms identifier"`
-	UnitSize   float64 `jsonapi:"attr,unit_size" description:"plot area of the property"`
+	UnitSize   float64 `jsonapi:"attr,unit_size" description:"plot area of the property in square feet"`
 	UnitNumber string  `jsonapi:"attr,unit_number" description:"unit number of the property"`
 }
 
