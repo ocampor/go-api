@@ -89,11 +89,13 @@ func (u UnitResource) validateDetails(request *restful.Request, response *restfu
 		return
 	}
 
+	var unitSizeSqft = unitSize*10.7639
+
 	//TODO: Extract this from the handler and move it to detail Validation
-	locationSimilarity := utils.BoolToFloat64(locationId == unit.LocationId)
-	bedroomSimilarity := utils.BoolToFloat64(bedroomId == unit.BedroomId)
-	unitSizeSimilarity := utils.FloatSimilarity(unit.UnitSize, unitSize*10.7639)
-	unitNumberSimilarity := utils.StringSimilarity(unit.UnitNumber, unitNumber)
+	locationSimilarity := utils.IntegerSimilarity(&locationId, unit.LocationId)
+	bedroomSimilarity := utils.IntegerSimilarity(&bedroomId, unit.BedroomId)
+	unitSizeSimilarity := utils.FloatSimilarity(unit.UnitSize, &unitSizeSqft)
+	unitNumberSimilarity := utils.StringSimilarity(unit.UnitNumber, &unitNumber)
 	overallSimilarity := utils.OverallSimilarity(
 		locationSimilarity,
 		bedroomSimilarity,
