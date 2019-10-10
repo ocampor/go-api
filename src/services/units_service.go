@@ -89,7 +89,7 @@ func (u UnitResource) validateDetails(request *restful.Request, response *restfu
 		return
 	}
 
-	var unitSizeSqft = unitSize*10.7639
+	var unitSizeSqft = unitSize / 10.7639
 
 	//TODO: Extract this from the handler and move it to detail Validation
 	locationSimilarity := utils.IntegerSimilarity(&locationId, unit.LocationId)
