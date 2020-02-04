@@ -13,7 +13,6 @@ import (
 
 func createClient(uri string) *gorm.DB {
 	db, err := gorm.Open("postgres", uri)
-	log.Printf("Connecting to: %s", uri)
 
 	if err != nil {
 		panic(err)

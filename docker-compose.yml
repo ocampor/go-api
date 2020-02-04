@@ -23,7 +23,9 @@ services:
   web:
     image: ocampor/go-api
     build:
-      context: ./docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 8000:8000
     environment:
       - POSTGRES_URI=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@dld-database/${DATABASE_NAME}?sslmode=disable
