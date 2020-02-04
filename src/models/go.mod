@@ -1,3 +1,3 @@
-module github.com/ocampor/go-api/models
+module github.com/ocampor/go-api/src/models
 
 go 1.13
