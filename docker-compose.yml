@@ -1,23 +1,14 @@
 version: '3.6'
 
 services:
-  migrate:
-    image: boxfuse/flyway:5.0
-    volumes:
-      - ./database/sql:/flyway/sql
-      - ./database/test:/flyway/sql/test
-    command: migrate
-    environment:
-      - FLYWAY_URL=jdbc:postgresql://dld-database/${DATABASE_NAME}
-      - FLYWAY_USER=${DATABASE_USER}
-      - FLYWAY_PASSWORD=${DATABASE_PASSWORD}
-      - FLYWAY_SCHEMAS=public
   dld-database:
     image: postgres:latest
     environment:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_DB=${DATABASE_NAME}
+    volumes:
+      - ./database/sql:/docker-entrypoint-initdb.d
     ports:
       - 5434:5432
   web:

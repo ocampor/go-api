@@ -23,3 +23,4 @@
 # Ignore pkg
 pkg/
 *bin/
+database/

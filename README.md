@@ -21,6 +21,15 @@ go get
 All the dependencies are installed, and saved in the `go.mod`
 for future references. The installed packages are stored in `$GOPATH/pkg`.
 
+## Download the migration file
+
+To get a copy of the database in your local, you need to download the
+migration file from `gs://datafinder-backup`.
+
+```
+gsutil cp gs://datafinder-backup/research.sql database/sql/research.sql
+```
+
 ## Run the API
 
 To run the API for the first time, install all the dependencies
