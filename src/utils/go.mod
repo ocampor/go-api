@@ -1,4 +1,4 @@
-module github.com/ocampor/app-go
+module github.com/ocampor/go-api/utils
 
 go 1.13
 
