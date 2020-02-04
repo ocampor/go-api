@@ -1,8 +1,8 @@
 package services
 
 import (
-	"../models"
-	"../utils"
+	"github.com/ocampor/go-api/src/models"
+	"github.com/ocampor/go-api/src/utils"
 	"github.com/emicklei/go-restful"
 	"github.com/google/jsonapi"
 	"github.com/jinzhu/gorm"
