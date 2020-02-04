@@ -1,11 +1,10 @@
 package main
 
 import (
-        "github.com/ocampor/go-api/src/services"
-	"github.com/ocampor/go-api/src/config"
-	"github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
 	"github.com/jinzhu/gorm"
+	"github.com/ocampor/go-api/src/config"
+	"github.com/ocampor/go-api/src/services"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +38,7 @@ func main() {
 	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(spec))
 
 	//TODO: Replace hard-coded path to swagger dist
-	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("/Users/ricardo/Workspace/swagger-ui/dist"))))
+	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("/dist"))))
 
 	log.Printf("start listening on localhost:8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))

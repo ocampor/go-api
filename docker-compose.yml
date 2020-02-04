@@ -18,5 +18,7 @@ services:
       dockerfile: ./docker/Dockerfile
     ports:
       - 8000:8000
+    volumes:
+      - ./dist:/dist
     environment:
       - POSTGRES_URI=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@dld-database/${DATABASE_NAME}?sslmode=disable

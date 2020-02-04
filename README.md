@@ -33,8 +33,17 @@ gsutil cp gs://datafinder-backup/research.sql database/sql/research.sql
 ## Run the API
 
 To run the API for the first time, install all the dependencies
-with 
+with: 
 
 ```
 go run app.go
+```
+
+## Swagger documentation
+
+The repository contains the files required to create a swagger server.
+To take a look run:
+
+```
+http://localhost:8000/docs/?url=http://localhost:8000/apidocs.json
 ```
