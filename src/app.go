@@ -1,8 +1,8 @@
 package main
 
 import (
-        "github.com/ocampor/app-go/services"
-	"github.com/ocampor/app-go/config"
+        "github.com/ocampor/go-api/src/services"
+	"github.com/ocampor/go-api/src/config"
 	"github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
 	"github.com/jinzhu/gorm"
