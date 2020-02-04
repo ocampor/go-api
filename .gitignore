@@ -19,3 +19,6 @@
 
 # Ignore env files
 .env*
+
+# Ignore pkg
+pkg/
